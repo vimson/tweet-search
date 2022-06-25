@@ -1,0 +1,19 @@
+service: express-starter-app
+
+plugins:
+  - serverless-offline
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: ${opt:stage, 'dev'}
+  region: eu-west-2
+  environment:
+    stage: ${self:provider.stage}
+
+functions:
+  TopInternsWebApp:
+    handler: src/handler.request
+    events:
+      - http: ANY /
+      - http: 'ANY {proxy+}'

@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+  redis_db:
+    container_name: tweet-redis-db
+    command: bash -c "redis-server"
+    image: redis
+    ports:
+      - '6379:6379'
+    volumes:
+      - ./redis-volume:/data
+    networks:
+      - mybridge
+
+  tweet-searcher:
+    container_name: tweet-searcher
+    command: bash -c "nodemon --watch src server.js"
+    build: .
+    volumes:
+      - .:/usr/src/app
+    ports:
+      - '3001:3001'
+    networks:
+      - mybridge
+
+networks:
+  mybridge:
