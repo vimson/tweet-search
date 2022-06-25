@@ -6,7 +6,7 @@ const { apiRateLimiter } = require('../middlewares/rate-limiter.middleware');
 router.get(
   '/tweets/:hashtag',
   apiRateLimiter,
-  checkCache({ ttl: 60 * 60 }),
+  checkCache({ ttl: process.env.Tweet_Cache_Interval }),
   TweetsController.search
 );
 

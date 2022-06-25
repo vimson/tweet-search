@@ -4,8 +4,8 @@
   "description": "Express starter web application",
   "main": "src/handler.js",
   "scripts": {
-    "jest:watch": "jest --watchAll ./src/tests/general.test.js",
-    "jest:test": "jest --runInBand --detectOpenHandles ./src/tests/dynamodb.repo.test.js"
+    "test": "jest --runInBand --detectOpenHandles --watchAll --coverage",
+    "testwatch": "jest --runInBand --detectOpenHandles --coverage --watch"
   },
   "author": "",
   "license": "MIT",

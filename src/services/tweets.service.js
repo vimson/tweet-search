@@ -1,6 +1,6 @@
 const Twit = require('twit');
 const { makeTweetFromStatus } = require('../factories/tweets.factory');
-
+const tweetResults = require('../tests/data/tweets');
 class TweetsService {
   twitObj = null;
 
@@ -17,10 +17,10 @@ class TweetsService {
 
   async search(hashTag) {
     try {
-      const tweetResults = await this.twitObj.get('search/tweets', {
-        q: `#${hashTag}`,
-        count: 100,
-      });
+      // const tweetResults = await this.twitObj.get('search/tweets', {
+      //   q: `#${hashTag}`,
+      //   count: process.env.Twitter_Search_Record_Count,
+      // });
       if (!tweetResults?.data?.statuses) {
         return [];
       }

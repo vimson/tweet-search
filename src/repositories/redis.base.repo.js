@@ -12,13 +12,11 @@ class RedisBaseRepository {
     });
 
     this.client.on('connect', () => {
-      console.log(`connected to redis`);
       this.isReady = true;
     });
   }
 
   async connect() {
-    console.log('Trying to connect');
     try {
       await this.client.connect();
     } catch (err) {
@@ -34,12 +32,16 @@ class RedisBaseRepository {
     if (options?.ttl) {
       await this.client.expire(key, options.ttl);
     }
-    return;
+    return true;
   }
 
   async read(key) {
     const value = await this.client.get(key);
     return value ? this.decode(value) : false;
+  }
+
+  async del(key) {
+    return await this.client.del(key);
   }
 
   encode(value) {
