@@ -15,6 +15,7 @@ describe('Twitter API testing', () => {
     const testToken = 'mU7JJsnnsNYTSNLAJmnbsjT';
     await redisBaseRepo.del(`request_logs_${testToken}`);
 
+    // We have modified the max window count to 5. so after 5 requests, the next request i going to be with Limit exceeds message
     let limitStatus = {};
     limitStatus = await rateLimiter.status(testToken);
     expect(limitStatus.status).toBe('OK');

@@ -14,7 +14,7 @@ services:
 
   tweet-searcher:
     container_name: tweet-searcher
-    command: bash -c "nodemon --watch src server.js"
+    command: bash -c "npm run dev"
     build: .
     volumes:
       - .:/usr/src/app

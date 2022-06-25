@@ -4,8 +4,9 @@
   "description": "Express starter web application",
   "main": "src/handler.js",
   "scripts": {
-    "test": "jest --runInBand --detectOpenHandles --watchAll --coverage",
-    "testwatch": "jest --runInBand --detectOpenHandles --coverage --watch"
+    "dev": "stage=dev nodemon --watch src server.js",
+    "start": "stage=prod nodemon --watch src server.js",
+    "test": "jest --runInBand --detectOpenHandles --watchAll --coverage"
   },
   "author": "",
   "license": "MIT",

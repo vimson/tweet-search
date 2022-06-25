@@ -18,6 +18,10 @@ class RateLimiter {
     this.maxWindowRequestCount = maxWindowRequestCount;
   }
 
+  /**
+   * @param {string} token
+   * @returns
+   */
   async status(token) {
     const requestLogs = await redisBaseRepo.read(this.cachePrefix + token);
     if (requestLogs === false) {

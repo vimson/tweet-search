@@ -1,4 +1,3 @@
-process.env.stage = 'dev';
 const app = require('./src/app');
 const port = process.env.SERVER_PORT || 3000;
 
