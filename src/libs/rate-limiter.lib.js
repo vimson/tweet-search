@@ -25,24 +25,15 @@ class RateLimiter {
   async status(token) {
     const requestLogs = await redisBaseRepo.read(this.cachePrefix + token);
     if (requestLogs === false) {
-      this.createTokenLimitRecord(token);
+      this.logFirstRequest(token);
       return { status: 'OK', limit: this.maxWindowRequestCount };
     }
 
-    const currentRequestTime = moment();
-    const [currWindowStartTime, currLogWindowStartTime] =
-      this.getWindowTimings(currentRequestTime);
-    const withinWindowRequests = requestLogs.filter((log) => {
-      return log.time > currWindowStartTime;
-    });
-    const windowRequestCount = withinWindowRequests.reduce(
-      (totalCount, log) => {
-        return totalCount + log.counter;
-      },
-      0
+    const [currWindowStartTime, currLogWindowStartTime] = this.getWindowTimings(
+      moment()
     );
 
-    if (windowRequestCount >= this.maxWindowRequestCount) {
+    if (this.requestExceeded(requestLogs, currWindowStartTime)) {
       return {
         status: 'LIMIT_EXCEEDS',
         message: `You have exceeded ${this.maxWindowRequestCount} requests in ${this.windowSize} minutes limit!`,
@@ -50,6 +41,22 @@ class RateLimiter {
       };
     }
 
+    this.logSubsequentRequest(token, requestLogs, currLogWindowStartTime);
+    return { status: 'OK', limit: this.maxWindowRequestCount };
+  }
+
+  async logFirstRequest(token) {
+    const requestLogs = [];
+    requestLogs.push({
+      time: moment().unix(),
+      counter: 1,
+    });
+
+    await redisBaseRepo.write(this.cachePrefix + token, requestLogs, 0);
+    return true;
+  }
+
+  async logSubsequentRequest(token, requestLogs, currLogWindowStartTime) {
     const lastRequestLog = requestLogs[requestLogs.length - 1];
     if (lastRequestLog.time > currLogWindowStartTime) {
       lastRequestLog.counter++;
@@ -61,7 +68,20 @@ class RateLimiter {
       });
     }
     await redisBaseRepo.write(this.cachePrefix + token, requestLogs, 0);
-    return { status: 'OK', limit: this.maxWindowRequestCount };
+    return;
+  }
+
+  requestExceeded(requestLogs, currWindowStartTime) {
+    const withinWindowRequests = requestLogs.filter((log) => {
+      return log.time > currWindowStartTime;
+    });
+    const windowRequestCount = withinWindowRequests.reduce(
+      (totalCount, log) => {
+        return totalCount + log.counter;
+      },
+      0
+    );
+    return windowRequestCount >= this.maxWindowRequestCount ? true : false;
   }
 
   getWindowTimings(currentRequestTime) {
@@ -74,17 +94,6 @@ class RateLimiter {
       .unix();
 
     return [currWindowStartTime, currLogWindowStartTime];
-  }
-
-  async createTokenLimitRecord(token) {
-    const requestLogs = [];
-    requestLogs.push({
-      time: moment().unix(),
-      counter: 1,
-    });
-
-    await redisBaseRepo.write(this.cachePrefix + token, requestLogs, 0);
-    return true;
   }
 }
 
