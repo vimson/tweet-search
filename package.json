@@ -2,7 +2,7 @@
   "name": "express-starter-web-app",
   "version": "2.2.0",
   "description": "Express starter web application",
-  "main": "src/handler.js",
+  "main": "server.js",
   "scripts": {
     "dev": "stage=dev nodemon --watch src server.js",
     "start": "stage=prod nodemon --watch src server.js",
